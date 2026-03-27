@@ -1,3 +1,11 @@
+# Alunos e usuários correspondentes no Github:
+# Alexandre Marques Tortoza Canoa - Alexandre-Tortoza
+# Arthur Capellazzi Fontana Amaral - arthurCpl
+# Gabriel Berto Beckauser - BrielPastel
+# Giuseppe Stringhini Adam - giuseppeadam
+
+# Grupo: RA1 21
+
 #!/usr/bin/env python
 
 _FUNCOES_AUXILIARES_ASM = """
@@ -84,7 +92,8 @@ def gerarAssembly(tokens):
 
         elif _eh_numero(token):
             label = nova_const(token)
-            emit(f"    VLDR D0, {label}")
+            emit(f"    LDR R0, ={label}")
+            emit("    VLDR D0, [R0]")
             emit("    BL push_d0")
 
         elif token == "+":
@@ -103,23 +112,29 @@ def gerarAssembly(tokens):
             emit("    BL pop_d0")
             emit("    VMOV D1, D0")
             emit("    BL pop_d0")
-            emit("    VCVT.S32.F64 S2, D1")
-            emit("    VMOV R1, S2")
+            emit("    VDIV.F64 D0, D0, D1")
             emit("    VCVT.S32.F64 S0, D0")
             emit("    VMOV R0, S0")
-            emit("    SDIV R0, R0, R1")
             emit("    VMOV S0, R0")
             emit("    VCVT.F64.S32 D0, S0")
             emit("    BL push_d0")
 
         elif token == "%":
             emit("    BL pop_d0")
-            emit("    VCVT.S32.F64 S2, D0")
-            emit("    VMOV R1, S2")
+            emit("    VMOV D1, D0")
             emit("    BL pop_d0")
             emit("    VCVT.S32.F64 S0, D0")
             emit("    VMOV R0, S0")
-            emit("    SDIV R2, R0, R1")
+            emit("    VCVT.S32.F64 S1, D1")
+            emit("    VMOV R1, S1")
+            emit("    MOV R2, #0")
+            emit("loop_div_0:")
+            emit("    CMP R0, R1")
+            emit("    BLT fim_div_0")
+            emit("    SUB R0, R0, R1")
+            emit("    ADD R2, R2, #1")
+            emit("    B loop_div_0")
+            emit("fim_div_0:")
             emit("    MUL R2, R2, R1")
             emit("    SUB R0, R0, R2")
             emit("    VMOV S0, R0")
@@ -135,7 +150,8 @@ def gerarAssembly(tokens):
             emit("    VCVT.S32.F64 S2, D1")
             emit("    VMOV R3, S2")
             label_const_um = nova_const("1.0")
-            emit(f"    VLDR D2, {label_const_um}")
+            emit(f"    LDR R0, ={label_const_um}")
+            emit("    VLDR D2, [R0]")
             emit(f"loop_pot_{numero_potencia}:")
             emit("    CMP R3, #0")
             emit(f"    BLE fim_pot_{numero_potencia}")
@@ -167,7 +183,8 @@ def gerarAssembly(tokens):
                 emit(f"    LDR R0, ={var_label}")
                 emit("    VSTR D0, [R0]")
             else:
-                emit(f"    VLDR D0, {var_label}")
+                emit(f"    LDR R0, ={var_label}")
+                emit("    VLDR D0, [R0]")
                 emit("    BL push_d0")
 
     emit("    B .")
@@ -184,29 +201,3 @@ def gerarAssembly(tokens):
     emit("history_count: .word 0")
 
     return "\n".join(codigo)
-
-
-if __name__ == "__main__":
-    import sys
-    from lexer import parseExpressao
-
-    if len(sys.argv) < 2:
-        print("Uso: python assembly.py <arquivo_de_teste.txt>")
-        sys.exit(1)
-
-    linhas = lerArquivo(sys.argv[1])
-
-    todos_tokens = []
-    for linha in linhas:
-        tokens = parseExpressao(linha)
-        todos_tokens.extend(tokens)
-
-    codigo_assembly = gerarAssembly(todos_tokens)
-
-    nome_saida = sys.argv[1].replace(".txt", ".s")
-    with open(nome_saida, "w") as f:
-        f.write(codigo_assembly)
-
-    print(f"Assembly gerado em: {nome_saida}")
-    print("Cole o conteúdo no CPulator: https://cpulator.01xz.net/?sys=arm")
-    print("Selecione: ARMv7 DE1-SoC")

@@ -1,3 +1,11 @@
+# Alunos e usuários correspondentes no Github:
+# Alexandre Marques Tortoza Canoa - Alexandre-Tortoza
+# Arthur Capellazzi Fontana Amaral - arthurCpl
+# Gabriel Berto Beckauser - BrielPastel
+# Giuseppe Stringhini Adam - giuseppeadam
+
+# Grupo: RA1 21
+
 #!/usr/bin/env python3
 
 import os

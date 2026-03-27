@@ -1,3 +1,10 @@
+# Alunos e usuários correspondentes no Github:
+# Alexandre Marques Tortoza Canoa - Alexandre-Tortoza
+# Arthur Capellazzi Fontana Amaral - arthurCpl
+# Gabriel Berto Beckauser - BrielPastel
+# Giuseppe Stringhini Adam - giuseppeadam
+
+# Grupo: RA1 21
 # -------------------------------------------------------
 # Aluno 1: Analisador Léxico com Autômato Finito Determinístico
 # -------------------------------------------------------
